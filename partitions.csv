@@ -1,0 +1,5 @@
+# Name,     Type,   SubType, Offset,  Size,     Flags
+nvs,        data,   nvs,     0x9000,  0x6000,  ,   # 24 KB
+phy_init,   data,   phy,     0xF000,  0x1000,  ,   # 4 KB
+spiffs,     data,   spiffs,  0x10000, 0x15000, ,   # 84 KB
+factory,    app,    factory, 0x30000, 0x180000, ,   # 1.5 MB (aligned to 64KB boundary)
