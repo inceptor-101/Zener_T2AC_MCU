@@ -31,7 +31,7 @@ wifi_ap_record_t ap_info[DEFAULT_SCAN_LIST_SIZE];
 esp_mqtt_client_handle_t mqtt_client = NULL;
 
 /* FreeRTOS event group to signal when we are connected & ready to make a request */
-static EventGroupHandle_t wifi_event_group;
+EventGroupHandle_t wifi_event_group;
 
 /* The event group allows multiple bits for each event,
    but we only care about one event - are we connected
@@ -47,14 +47,14 @@ typedef struct {
     char data[500];
 } mqtt_message_t;
 
-static void log_error_if_nonzero(const char *message, int error_code)
+void log_error_if_nonzero(const char *message, int error_code)
 {
     if (error_code != 0) {
         ESP_LOGE(ESP_TAG, "Last error %s: 0x%x", message, error_code);
     }
 }
 
-static void wifi_event_handler(void* handler_args, esp_event_base_t base, int32_t id, void* event_data)
+void wifi_event_handler(void* handler_args, esp_event_base_t base, int32_t id, void* event_data)
 {
     ESP_LOGI(ESP_TAG, "WiFi event_handler: %s:%" PRIi32, base, id);
 
@@ -134,7 +134,7 @@ void initialise_wifi(void)
     ESP_ERROR_CHECK( esp_wifi_start() );
 }
 
-static void wifi_get_ap(){
+void wifi_get_ap(){
     memset(ap_info_display, 0, sizeof(ap_info_display));
     esp_wifi_sta_get_ap_info(ap_info_display);
     ESP_LOGI(WIFI_TAG, "Displaying connected to SSID....");    
@@ -155,7 +155,7 @@ static void wifi_get_ap(){
     printf("Value of notification_state 05 %d \n",notification_state);
 }
 
-static void wifi_connect(uint8_t* ssid, uint8_t* password) {
+void wifi_connect(uint8_t* ssid, uint8_t* password) {
     // Validate inputs
     if (ssid == NULL || password == NULL) {
         ESP_LOGE("WiFi", "SSID or password is NULL!");
@@ -210,13 +210,13 @@ static void wifi_connect(uint8_t* ssid, uint8_t* password) {
     memset(&wifi_config.sta.password, 0, sizeof(wifi_config.sta.password));
 }
 
-static void copy_ssids(uint8_t* from, uint8_t* to, uint8_t len){
+void copy_ssids(uint8_t* from, uint8_t* to, uint8_t len){
     for(uint8_t i=0; i<len; i++){
         to[i] = from[i];
     }
 }
 
-static void wifi_scan(void)
+void wifi_scan(void)
 {
     //static const char *TAG = "scan";
     ssid_index = 0;
@@ -247,7 +247,7 @@ static void wifi_scan(void)
     }
 }
 
-void check_internet_status() {
+bool check_internet_status() {
     esp_err_t err = ESP_OK;
     esp_http_client_config_t config = {
         .url = "http://www.google.com",
@@ -257,15 +257,16 @@ void check_internet_status() {
     esp_http_client_set_method(client, HTTP_METHOD_GET);
     err = esp_http_client_perform(client);
     if (err == ESP_OK) {
-        //internet_connected = true;
+        internet_connected = true;
         //gpio_set_level(INTERNET_LED, 1); // Turn on LED if internet is connected
         //ESP_LOGI(WIFI_TAG, "Internet is connected");
     } else {
-        //internet_connected = false;
+        internet_connected = false;
         //gpio_set_level(INTERNET_LED, 0);
         //ESP_LOGE(WIFI_TAG, "Internet is disconnected");
     }
     esp_http_client_cleanup(client);
+    return internet_connected;
 }
 
 void timer_task_1(void *pvParameters) {

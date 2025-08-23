@@ -24,6 +24,7 @@ uint16_t global_conn_handle = BLE_HS_CONN_HANDLE_NONE;
 bool wifiInitialised = false;
 bool wifi_connected = false;    
 uint8_t isr_counter =0;
+bool internet_connected = false;
 
 //Global Variables to Store the SSID and Password
 char connected_ssid[32];     // Max SSID length is 32 + 1 for null

@@ -6,7 +6,7 @@ idf_component_register(
          "../components/NVS/SaveNVSdata.c" 
          "../components/Services/services.c" 
          "../components/WiFi/WiFi.c"  
-         "../components/WiFi_Task/wifi_task.c"
+         "../components/WiFi/wifi_task.c"
     # required,
     # list the source files of this component
     INCLUDE_DIRS        # optional, add here public include directories

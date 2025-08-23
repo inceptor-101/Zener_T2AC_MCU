@@ -31,10 +31,9 @@
 #include "../components/canLib/canFunction.h"
 #include "../components/BLE/bleFunction.h"
 #include "../components/Services/services.h"
-#include "../components/WiFi/mqtt.h"
+#include "../components/WiFi/wifi_task.h"
 #include "../components/NVS/FetchNVSdata.h"
 #include "../components/NVS/SaveNVSdata.h"
-#include "../components/WiFi_Task/wifi_task.h"
 
 #define EMERGENCY_STOP_PRESS GPIO_NUM_2
 #define INTERNET_LED GPIO_NUM_21
@@ -54,6 +53,7 @@ extern SemaphoreHandle_t mutex_handle;
 extern uint16_t global_conn_handle;
 extern bool wifiInitialised;
 extern bool wifi_connected;
+extern bool internet_connected;
 
 extern char connected_ssid[32];
 extern char connected_password[32];
