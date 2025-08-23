@@ -332,42 +332,43 @@ static void gptimer_init_and_start(gptimer_handle_t *timer,
  */
 bool determine_authentication_status()
 {
-    if(securitySetting.chargerMode == OFFLINE)
-    {
-        if(securitySetting.ftuMode == ENABLED)
-        {
-            //FTU Mode is Enabled, Hence Authentication is always Successful - 1
-            return true;
-        }
-        else
-        {
-            //FTU Mode is Disabled, Hence authentication is required - 0
-            //RFID or PIN based authentication Logic goes here
-            return false;
-        }
-    }
-    else
-    {
-        //Online Mode, Hence authentication is required
-        if(remoteStartStatusFromOCPPServer == 1 || authorizeConfirmationAcceptedFromOCPPServer == 1)
-        {
-            //Authentication is Successful
-            return true;
-        }
-        else{
-            // localGracefulTerminationByUser
-            // localGracefulTerminationByEV
-            // faultyTermination
-            // remoteStopFromOCPPServer
-            return false;
-        }
-        return false;
-    }
+    // if(securitySetting.chargerMode == OFFLINE)
+    // {
+    //     if(securitySetting.ftuMode == ENABLED)
+    //     {
+    //         //FTU Mode is Enabled, Hence Authentication is always Successful - 1
+    //         return true;
+    //     }
+    //     else
+    //     {
+    //         //FTU Mode is Disabled, Hence authentication is required - 0
+    //         //RFID or PIN based authentication Logic goes here
+    //         return false;
+    //     }
+    // }
+    // else
+    // {
+    //     //Online Mode, Hence authentication is required
+    //     if(remoteStartStatusFromOCPPServer == 1 || authorizeConfirmationAcceptedFromOCPPServer == 1)
+    //     {
+    //         //Authentication is Successful
+    //         return true;
+    //     }
+    //     else{
+    //         // localGracefulTerminationByUser
+    //         // localGracefulTerminationByEV
+    //         // faultyTermination
+    //         // remoteStopFromOCPPServer
+    //         return false;
+    //     }
+    //     return false;
+    // }
+    return true;    // Just for testing 
 }
 
 bool determine_faulty_connector()
 {
-
+    return true;    // Just for testing
 }
 
 
@@ -469,27 +470,35 @@ void app_main(void)
          * These values guide how CAN, MQTT, Wi-Fi, and Charging Logic will initialize.
          */
         if(securitySetting.chargerMode == ONLINE) {
-            ESP_LOGI("MODE", "Operating in ONLINE mode");
+            ESP_LOGI("MODE", "Operating in ONLINE mode");   // Logging for the online mode cnfg
 
-            if(load_wifi_credentials_nvs(connected_ssid, sizeof(connected_ssid), connected_password, sizeof(connected_password)) == ESP_OK) {
-                ESP_LOGI("WiFi", "SSID: %s", connected_ssid);
-                ESP_LOGI("WiFi", "Password: %s", connected_password);
+            // Loading the default wifi credentials from the non volatile storage 
+            esp_err_t fetched_default_wifi_creds = load_wifi_credentials_nvs(connected_ssid, sizeof(connected_ssid), connected_password, sizeof(connected_password));
+
+            // If successfully fetched 
+            if(fetched_default_wifi_creds == ESP_OK) {  
+                ESP_LOGI("WiFi", "SSID: %s", connected_ssid);   // Printing the fetched SSID
+                ESP_LOGI("WiFi", "Password: %s", connected_password);   // Printing the fetched  password 
+            // If failed to fetch 
             } else {
-                ESP_LOGW("WiFi", "No credentials found in NVS");
+                ESP_LOGW("WiFi", "No credentials found in NVS");    // Could not access the creds
             }
             
+            // Loading the OCPP port and related parameters from the nvs flash memory 
             load_server_settings_from_nvs();
 
-            //Initialize the wifi service
             initialise_wifi();
-
-            timer_initialize();
-            
-            //Initialize the UART for OCPP Communication
-
-
-        } 
-        else if(securitySetting.chargerMode == OFFLINE) {
+            // We will initialise a wifi task which is pinned to core 0
+            xTaskCreatePinnedToCore(
+                wifi_task_core0, 
+                "WiFi-Task", 
+                4096, NULL, 
+                0, 
+                NULL, 
+                0
+            ); 
+            // timer_initialize();
+        }else if(securitySetting.chargerMode == OFFLINE) {
             ESP_LOGI("MODE", "Operating in OFFLINE mode");
             if(securitySetting.ftuMode == ENABLED) {
                 ESP_LOGI("MODE", "FTU Mode is ENABLED");

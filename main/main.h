@@ -34,6 +34,7 @@
 #include "../components/WiFi/mqtt.h"
 #include "../components/NVS/FetchNVSdata.h"
 #include "../components/NVS/SaveNVSdata.h"
+#include "../components/WiFi_Task/wifi_task.h"
 
 #define EMERGENCY_STOP_PRESS GPIO_NUM_2
 #define INTERNET_LED GPIO_NUM_21
