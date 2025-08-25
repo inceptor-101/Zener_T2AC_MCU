@@ -5,6 +5,7 @@ bool could_not_connect = false;
 static bool wifi_scanning_timeout = false;       // Controls whether retry is allowed
 static TimerHandle_t wifi_retry_timer;       // FreeRTOS timer handle
 static bool scanning_beautify = false;
+static bool timer_started = false;
 
 //For timer utility
 static void retry_timer_callback(TimerHandle_t wifi_retry_timer){
@@ -95,13 +96,16 @@ void wifi_task_core0(void* pvParameters) {
                     wifi_scanning_timeout = false;
                     ESP_LOGI("WIFI", "Could not find the APs in scan.... Doing BOOTUP");
                     curr_wifi_state = BOOT_UP;
+                    timer_started = false;
                     break;
                 }
-
-                //If timeout has not happened yet 
-                xTimerStart(wifi_retry_timer, 0); // setting the timeout, timeout does 
-                                                  // not restart on repetitive calling 
-                                                  // unless actualy time out happens 
+                if (!timer_started){
+                    //If timeout has not happened yet 
+                    xTimerStart(wifi_retry_timer, 0); // setting the timeout, timeout does 
+                                                    // not restart on repetitive calling 
+                                                    // unless actualy time out happens 
+                    timer_started = true;
+                }
                                                   
 
                 //Main logic
