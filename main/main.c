@@ -21,7 +21,7 @@ SemaphoreHandle_t mutex_handle;
 connector_status_t status = AVAILABLE;
 
 uint16_t global_conn_handle = BLE_HS_CONN_HANDLE_NONE;
-bool wifiInitialised = false;
+bool wifi_initialised = false;
 bool wifi_connected = false;    
 uint8_t isr_counter =0;
 bool internet_connected = false;

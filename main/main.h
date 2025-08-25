@@ -51,7 +51,7 @@ extern TaskHandle_t main_task_handle;
 extern SemaphoreHandle_t mutex_handle;
 
 extern uint16_t global_conn_handle;
-extern bool wifiInitialised;
+extern bool wifi_initialised;
 extern bool wifi_connected;
 extern bool internet_connected;
 
